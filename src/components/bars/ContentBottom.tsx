@@ -3,7 +3,7 @@ import { Button, Input } from "@nextui-org/react";
 
 const ContentBottom = () => {
     return (
-        <div className="flex flex-row w-full bg-red-300 h-[60px] py-3 items-center gap-2 px-2">
+        <div className="flex flex-row w-full h-[60px] py-3 items-center gap-2 px-2">
             <Input
                 className="h-[36px] overflow-hidden"
                 placeholder="Aa"

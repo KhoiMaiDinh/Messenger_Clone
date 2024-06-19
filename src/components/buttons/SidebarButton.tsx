@@ -2,23 +2,36 @@ import { Button } from "@nextui-org/react";
 import React from "react";
 
 type TComponentProps = {
-    Icon: React.ComponentType<{
+    Icon?: React.ComponentType<{
         className?: string;
     }>;
+    isIconOnly?: boolean;
+    buttonClassName?: string;
+    url?: string | null;
+    onClick?: () => void;
 };
 
-const SidebarButton = ({ Icon }: TComponentProps) => {
+const SidebarButton = ({
+    Icon,
+    isIconOnly = true,
+    buttonClassName = "",
+    url,
+    onClick,
+}: TComponentProps) => {
     return (
-        // <div className="">
         <Button
-            isIconOnly
+            onClick={onClick}
+            isIconOnly={isIconOnly}
             variant="solid"
-            className="w-[44px] h-[44px] focus:outline-none focus:bg-[#0000000f] hover:bg-[#0000000f] bg-transparent  border-none"
+            className={
+                "w-[44px] h-[44px] focus:outline-none focus:bg-[#0000000f] hover:bg-[#0000000f] bg-transparent  border-none " +
+                buttonClassName
+            }
             radius="sm"
         >
-            <Icon />
+            {url && <img src={url} alt="Avt" />}
+            {Icon && <Icon />}
         </Button>
-        // </div>
     );
 };
 

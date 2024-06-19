@@ -1,14 +1,18 @@
 import React from "react";
-import OpponentMessage from "./OpponentMessage";
 import ContentHeader from "../bars/ContentHeader";
 import ContentBottom from "../bars/ContentBottom";
 import ContentBody from "./ContentBody";
 
-const MessageContent = () => {
+type TScreenProps = {
+    isNewChat: boolean;
+    setIsNewChat?: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const MessageContent = ({ isNewChat }: TScreenProps) => {
     return (
-        <div className="flex flex-col flex-1 rounded-xl bg-[url('@/assets/images/background_1st.jpg')] bg-cover  relative overflow-hidden">
-            <ContentHeader />
-            <ContentBody />
+        <div className="flex flex-col flex-1 rounded-xl bg-[url('@/assets/images/background_1st.jpg')] bg-cover relative overflow-hidden ">
+            <ContentHeader isNewChat={isNewChat} userName="Quốc" />
+            <ContentBody isNewChat={isNewChat} />
             <ContentBottom />
         </div>
     );
