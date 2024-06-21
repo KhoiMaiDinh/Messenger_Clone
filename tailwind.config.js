@@ -12,4 +12,9 @@ export default {
     },
     darkMode: "class",
     plugins: [nextui()],
+    variants: {
+        extend: {
+            opacity: ["group-hover"],
+        },
+    },
 };

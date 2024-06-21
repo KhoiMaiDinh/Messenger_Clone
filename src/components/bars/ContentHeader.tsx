@@ -16,17 +16,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { add } from "@/app/features/chat/chatSlice";
 import { IChat } from "@/types/Chat";
 import { RootState } from "@/app/store";
+import { useParams } from "react-router-dom";
 
 type TComponentProps = {
     isNewChat: boolean;
-    userName: string;
+    setIsNewChat: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const ContentHeader: FunctionComponent<TComponentProps> = ({
     isNewChat,
-    userName,
+    setIsNewChat,
 }) => {
     const { user: self } = useAuth();
+    const { id: chat_id } = useParams();
+    const opponent = useSelector((state: RootState) =>
+        state.chats.chats
+            .find((chat) => {
+                return chat.id.toString() == chat_id!;
+            })
+            ?.people.find((p) => p.person.username != self?.email)
+    );
 
     const [users, setUsers] = useState<IUser[]>([]);
     const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
@@ -88,6 +97,8 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
         } finally {
             setIsLoadingCreate(false);
         }
+
+        setIsNewChat(false);
     };
 
     return (
@@ -95,29 +106,26 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
             <div className="flex flex-row h-full items-center gap-3 hover:bg-[#1313130f] px-2 rounded-md">
                 {!isNewChat && (
                     <AvatarComponent
-                        userName="Khoi"
+                        userName="avt"
                         isOnline={false}
                         sizeClass={"w-[32px] h-[32px]"}
-                        imgUrl={defaultAvt}
+                        imgUrl={opponent?.person.avatar || defaultAvt}
                     />
                 )}
-                <div
-                // className="bg-red-300 w-[100px] flex"
-                // onClick={(e) => setVisible(true)}
-                // onBlur={(e) => setVisible(false)}
-                // tabIndex={-1}
-                >
+                <div>
                     <span
                         className={`text-[15px] text-white ${
                             isNewChat ? "font-normal" : "font-semibold"
                         }`}
                     >
-                        {isNewChat ? "Đến: " : userName}
+                        {isNewChat ? "Đến: " : opponent?.person.username}
                     </span>
-                    <input
-                        className=" bg-transparent focus:outline-none text-white w-[100px] inline-block"
-                        onClick={(e) => setVisible(true)}
-                    />
+                    {
+                        <input
+                            className=" bg-transparent focus:outline-none text-white w-[100px] inline-block"
+                            onClick={(e) => setVisible(true)}
+                        />
+                    }
                     <div
                         ref={ref}
                         className={`absolute w-60 overflow-hidden bg-white dark:bg-dark self-start left-2 top-12 border rounded-md border-slate-300 flex overflow-y-auto flex-col max-h-[225px] transition-all duration-300 origin-top z-50s ${
@@ -147,7 +155,7 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                                     imgUrl={user.avatar}
                                     sizeClass={"h-[24px] w-[24px]"}
                                 />
-                                {user.email}
+                                {user.username}
                             </Button>
                         ))}
                     </div>

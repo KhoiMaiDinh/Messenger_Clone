@@ -27,6 +27,7 @@ const AvatarComponent: FunctionComponent<TComponentProps> = ({
                 name={userName}
                 src={imgUrl}
                 className={sizeClass}
+
                 // size="sm"
             />
             {isOnline && (

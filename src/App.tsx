@@ -81,6 +81,12 @@ const router = createBrowserRouter(
             <Route path="sign-in" element={<SignIn />} />
             <Route element={<PrivateRoutes />}>
                 <Route index element={<Home />} />
+                <Route
+                    path=":id"
+                    element={<Home />}
+                    // element={<CareerDetails />}
+                    // loader={careerDetailsLoader}
+                />
             </Route>
             {/* <Route path="about" element={<About />} />
       <Route path="help" element={<HelpLayout />}>

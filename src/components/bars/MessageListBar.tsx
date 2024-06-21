@@ -6,6 +6,8 @@ import { useAuth } from "@/contexts/authContext";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/store";
 import { fetch } from "@/app/features/chat/chatSlice";
+import { IChat } from "@/types/Chat";
+import { useNavigate } from "react-router-dom";
 
 type TScreenProps = {
     isNewChat: boolean;
@@ -14,6 +16,7 @@ type TScreenProps = {
 
 const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const chats = useSelector((state: RootState) => state.chats.chats);
     const dispatch = useDispatch();
 
@@ -26,6 +29,13 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
         }
     };
 
+    const getOpponent = (chat: IChat) => {
+        return chat.people.find((p) => p.person.username != user?.email);
+    };
+
+    function handleClick(id: number) {
+        navigate(`/${id}`);
+    }
     useEffect(() => {
         const getChats = async () => {
             const fetchedChats = await fetchChats(
@@ -49,14 +59,26 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
                 className="flex flex-1 flex-col overflow-y-auto px-[6px]"
             >
                 {isNewChat && (
-                    <MessageItem userName="Tin nhắn mới" isOnline={false} />
+                    <MessageItem
+                        userName="Tin nhắn mới"
+                        isOnline={false}
+                        setIsNewChat={setIsNewChat}
+                    />
                 )}
-                {chats.map(() => (
+                {chats.map((chat) => (
+                    <MessageItem
+                        key={chat.id}
+                        chatId={chat.id}
+                        userName={getOpponent(chat)?.person.username!}
+                        imgUrl={getOpponent(chat)?.person.avatar!}
+                        isOnline={getOpponent(chat)?.person.is_online!}
+                        onClick={() => handleClick(chat.id)}
+                    />
+                ))}
+
+                {[...Array(10).keys()].map(() => (
                     <MessageItem userName="Anh Quốc" isOnline={false} />
                 ))}
-                {/* {[ ...Array(10).keys() ].map(() => (
-                    <MessageItem userName="Anh Quốc" isOnline={false} />
-                ))} */}
             </div>
         </div>
     );
