@@ -1,6 +1,5 @@
 import { Avatar } from "@nextui-org/react";
 import { FunctionComponent } from "react";
-import a from "@/assets/images/avatar.jpg";
 
 type TComponentProps = {
     isOnline?: boolean;
@@ -27,7 +26,7 @@ const AvatarComponent: FunctionComponent<TComponentProps> = ({
                 name={userName}
                 src={imgUrl}
                 className={sizeClass}
-
+                // ="no-referrer"
                 // size="sm"
             />
             {isOnline && (

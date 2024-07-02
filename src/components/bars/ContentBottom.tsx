@@ -1,8 +1,10 @@
 import * as Yup from "yup";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Input, Textarea } from "@nextui-org/react";
 import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 import { createMessage } from "@/api/message";
 import { addNewMessage } from "@/app/features/message/messageSlice";
@@ -44,21 +46,24 @@ const ContentBottom = () => {
         }
     };
     return (
-        <div className="flex flex-row w-full h-[60px] py-3 items-center gap-2 px-2">
-            <Input
+        <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 bg-blue-400">
+            <Textarea
                 id="text"
                 onChange={formik.handleChange}
                 value={formik.values.text}
-                className="h-[36px] overflow-hidden"
+                // className="min-h-[36px] overflow-x-hidden overflow-y-auto"
                 placeholder="Aa"
                 radius="full"
+                minRows={1}
+                maxRows={6}
                 classNames={{
+                    innerWrapper: "items-center",
                     inputWrapper:
-                        "data-[hover=true]:bg-default-100 min-h-[36px] pr-1",
-                    base: ["h-[36px]"],
+                        "data-[hover=true]:bg-default-100 min-h-[36px] py-0 pr-1 items-center justify-center ",
+                    base: ["min-h-[36px] p-0"],
                 }}
                 endContent={
-                    <button className="flex p-0 rounded-full">
+                    <button className="flex p-0 rounded-full self-end">
                         <IC_Smile />
                     </button>
                 }

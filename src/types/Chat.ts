@@ -3,12 +3,14 @@ export interface IChat {
     is_direct_chat: boolean;
     last_message: ILastMessage;
     title: string;
-    people: { person: IPerson }[];
+    people: { person: IPerson; last_read: number }[];
 }
 
-interface ILastMessage {
+export interface ILastMessage {
+    id: number;
     sender_username: string;
     text: string;
+    created: string; // ISO String
 }
 
 interface IPerson {

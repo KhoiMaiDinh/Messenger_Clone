@@ -13,8 +13,7 @@ import { IUser } from "@/types/User";
 import { Button } from "@nextui-org/react";
 import { createChat } from "@/api/chat";
 import { useDispatch, useSelector } from "react-redux";
-import { add } from "@/app/features/chat/chatSlice";
-import { IChat } from "@/types/Chat";
+import { addToBeginning } from "@/app/features/chat/chatSlice";
 import { RootState } from "@/app/store";
 import { useParams } from "react-router-dom";
 
@@ -91,7 +90,7 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                 usr_secret,
                 opponent_name
             );
-            dispatch(add(newChat.data));
+            // dispatch(addToBeginning(newChat.data));
         } catch (e) {
             console.log(e);
         } finally {

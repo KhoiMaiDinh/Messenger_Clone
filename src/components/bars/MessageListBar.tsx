@@ -32,6 +32,9 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     const getOpponent = (chat: IChat) => {
         return chat.people.find((p) => p.person.username != user?.email);
     };
+    const getSelf = (chat: IChat) => {
+        return chat.people.find((p) => p.person.username == user?.email);
+    };
 
     function handleClick(id: number) {
         navigate(`/${id}`);
@@ -67,18 +70,20 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
                 )}
                 {chats.map((chat) => (
                     <MessageItem
-                        key={chat.id}
                         chatId={chat.id}
-                        userName={getOpponent(chat)?.person.username!}
-                        imgUrl={getOpponent(chat)?.person.avatar!}
                         isOnline={getOpponent(chat)?.person.is_online!}
+                        imgUrl={getOpponent(chat)?.person.avatar!}
+                        key={chat.id}
+                        lastMessage={chat.last_message}
+                        userName={getOpponent(chat)?.person.username!}
+                        lastReadMessageId={getSelf(chat)?.last_read!}
                         onClick={() => handleClick(chat.id)}
                     />
                 ))}
 
-                {[...Array(10).keys()].map(() => (
+                {/* {[...Array(10).keys()].map(() => (
                     <MessageItem userName="Anh Quốc" isOnline={false} />
-                ))}
+                ))} */}
             </div>
         </div>
     );

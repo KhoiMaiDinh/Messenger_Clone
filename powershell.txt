@@ -1,0 +1,2 @@
+To view VITE ENV: Get-ChildItem Env: | Where-Object { $_.Name -like "VITE_*" }
+TO delete VITE ENV: Get-ChildItem Env: | Where-Object { $_.Name -like "VITE_*" } | ForEach-Object { Remove-Item Env:\$($_.Name) }

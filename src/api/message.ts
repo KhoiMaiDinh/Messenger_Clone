@@ -1,6 +1,6 @@
 import api from "@/api/apiInstance";
 
-export const createMessage = async (
+const createMessage = async (
     prj_id: string,
     usr_name: string,
     usr_secret: string,
@@ -22,7 +22,7 @@ export const createMessage = async (
     );
 };
 
-export const getLatestChats = async (
+const getLatestChats = async (
     prj_id: string,
     usr_name: string,
     usr_secret: string,
@@ -37,3 +37,27 @@ export const getLatestChats = async (
         },
     });
 };
+
+const readMessage = async (
+    prj_id: string,
+    usr_name: string,
+    usr_secret: string,
+    chat_id: string,
+    last_read: number
+) => {
+    return await api.patch(
+        `/chats/${chat_id}/people/`,
+        {
+            last_read,
+        },
+        {
+            headers: {
+                "project-id": prj_id,
+                "user-name": usr_name,
+                "user-secret": usr_secret,
+            },
+        }
+    );
+};
+
+export { createMessage, getLatestChats, readMessage };

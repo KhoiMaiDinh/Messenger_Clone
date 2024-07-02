@@ -53,10 +53,11 @@ const PrivateRoutes = () => {
                 user.email && formdata.append("email", user.email);
                 user.email && formdata.append("username", user.email);
                 user.uid && formdata.append("secret", user.uid);
+                user.displayName &&
+                    formdata.append("first_name", user.displayName);
 
                 user.photoURL &&
                     getFile(user.photoURL, user.uid).then((avatar) => {
-                        console.log(avatar);
                         formdata.append("avatar", avatar, avatar.name);
 
                         api.post("users/", formdata, {
@@ -64,13 +65,14 @@ const PrivateRoutes = () => {
                                 "Content-Type": "multipart/form-data",
                             },
                         })
-                            .then(() => console.log("Register new user succss"))
-                            .catch((e) => console.log("e", e.response));
+                            .then(() =>
+                                console.log("Register new user success")
+                            )
+                            .catch((e) => console.log("e", e));
                     });
             });
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     }, []);
-
     // if (user == null) return <Navigate to="/sign-in" replace />;
     return <Outlet />;
 };

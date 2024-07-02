@@ -29,7 +29,7 @@ const SidebarButton = ({
             }
             radius="sm"
         >
-            {url && <img src={url} alt="Avt" />}
+            {url && <img src={url} alt="Avt" referrerPolicy="no-referrer" />}
             {Icon && <Icon />}
         </Button>
     );
