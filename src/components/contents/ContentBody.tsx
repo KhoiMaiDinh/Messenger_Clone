@@ -8,6 +8,7 @@ import { getLatestChats } from "@/api/message";
 import { useAuth } from "@/contexts/authContext";
 import { fetchMessages } from "@/app/features/message/messageSlice";
 import { IMessage } from "@/types/Message";
+import { getTime } from "@/utils/time";
 
 type TComponentProps = {
     isNewChat: boolean;
@@ -19,6 +20,13 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
     const dispatch = useDispatch();
     const messages = useSelector((state: RootState) =>
         state.messages.find((mes) => mes.chatId.toString() == chat_id)
+    );
+    const opponent = useSelector((state: RootState) =>
+        state.chats.chats
+            .find((chat) => {
+                return chat.id.toString() == chat_id!;
+            })
+            ?.people.find((p) => p.person.username != self?.email)
     );
 
     useEffect(() => {
@@ -101,9 +109,11 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
         if (
             current.sender.username != prev.sender.username &&
             current.sender.username == next.sender.username
-        )
+        ) {
+            if (diffMinuteswN > 3) return "alone";
+
             return "end";
-        else if (
+        } else if (
             current.sender.username == prev.sender.username &&
             current.sender.username == next.sender.username
         ) {
@@ -113,12 +123,76 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
         } else if (
             current.sender.username == prev.sender.username &&
             current.sender.username != next.sender.username
-        )
+        ) {
+            if (diffMinuteswP > 3) return "alone";
             return "start";
+        }
         return "alone";
+    };
+
+    const getDiffMinutesWithPre = (messages: IMessage[], index: number) => {
+        const current = messages[index];
+        const timeOfCurrent = new Date(current.created);
+
+        if (index == messages.length - 1) {
+            return 4;
+        }
+
+        const next = messages[index + 1];
+        const timeOfNext = new Date(next.created);
+
+        const timeDiffwN = Math.abs(
+            timeOfCurrent.getTime() - timeOfNext.getTime()
+        );
+        const diffMinuteswN = Math.floor(timeDiffwN / (1000 * 60));
+        return diffMinuteswN;
+    };
+
+    const getTimeString = (isoString: string) => {
+        const date = new Date(isoString);
+        const now = new Date();
+        const distance = (now.getTime() - date.getTime()) / 1000;
+        let hour = date.getHours();
+        const hourString = hour > 9 ? "" + hour : "0" + hour;
+        let minute = date.getMinutes();
+        const minuteString = minute > 9 ? "" + minute : "0" + minute;
+        let dayString = "";
+        let distanceAsDay = Math.round(distance / (60 * 60 * 24));
+        if (distanceAsDay >= 1 && distanceAsDay <= 7) {
+            const dayOfWeek = date.getDay(); // Trả về một số từ 0 (Chủ Nhật) đến 6 (Thứ Bảy)
+
+            // Chuyển đổi số thành tên thứ trong tiếng Anh
+            const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+            dayString = days[dayOfWeek];
+        }
+        if (distanceAsDay > 7) {
+            dayString =
+                date.getDate() +
+                " Tháng " +
+                date.getMonth() +
+                ", " +
+                date.getFullYear();
+        }
+        return hourString + ":" + minuteString + " " + dayString;
     };
     return (
         <div className="flex flex-col-reverse flex-1 relative overflow-y-scroll z-10 gap-[2px]">
+            {messages?.messages.at(-1)?.id! > 9999 &&
+                opponent?.last_read != messages?.messages.at(-1)?.id && (
+                    <div className="flex justify-end h-4 pr-2">
+                        <span className="text-white dark:text-[#65676B] text-[12px] ">
+                            {`Đã gửi ${getTime(
+                                messages?.messages.at(-1)?.created!
+                            ).toLowerCase()} ${
+                                getTime(
+                                    messages?.messages.at(-1)?.created!
+                                ).toLowerCase() != "bây giờ"
+                                    ? "trước"
+                                    : ""
+                            }`}
+                        </span>
+                    </div>
+                )}
             {isNewChat ? null : (
                 <>
                     {messages?.messages?.length &&
@@ -126,16 +200,37 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
                             .slice(0)
                             .reverse()
                             .map((mes, index) => (
-                                <MessageItem
-                                    key={mes.id}
-                                    text={mes.text}
-                                    isSelf={mes.sender.username == self?.email}
-                                    imgUrl={mes.sender.avatar}
-                                    type={getMessageStatus(
+                                <div>
+                                    {getDiffMinutesWithPre(
                                         messages.messages.slice(0).reverse(),
                                         index
+                                    ) > 3 && (
+                                        <div className="flex w-full h-[43px] items-center justify-center font-medium  text-white dark:text-[#65676B] text-[0.75rem]">
+                                            {getTimeString(mes.created)}
+                                        </div>
                                     )}
-                                />
+                                    <MessageItem
+                                        key={mes.id}
+                                        id={mes.id}
+                                        text={mes.text}
+                                        isSelf={
+                                            mes.sender.username == self?.email
+                                        }
+                                        isSeen={opponent?.last_read == mes.id}
+                                        opponentImgUrl={
+                                            opponent?.last_read == mes.id
+                                                ? opponent.person.avatar
+                                                : undefined
+                                        }
+                                        imgUrl={mes.sender.avatar}
+                                        type={getMessageStatus(
+                                            messages.messages
+                                                .slice(0)
+                                                .reverse(),
+                                            index
+                                        )}
+                                    />
+                                </div>
                             ))}
                 </>
             )}

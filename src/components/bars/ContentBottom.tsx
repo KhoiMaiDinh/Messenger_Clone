@@ -1,3 +1,4 @@
+import { KeyboardEvent } from "react";
 import * as Yup from "yup";
 import { Button, Input, Textarea } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -7,9 +8,13 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 
 import { createMessage } from "@/api/message";
-import { addNewMessage } from "@/app/features/message/messageSlice";
+import {
+    addNewMessage,
+    replaceTempMessage,
+} from "@/app/features/message/messageSlice";
 import { IC_Send, IC_Smile } from "@/assets/icons";
 import { useAuth } from "@/contexts/authContext";
+import { IMessage } from "@/types/Message";
 
 const ContentBottom = () => {
     const { id: current_id } = useParams();
@@ -32,6 +37,20 @@ const ContentBottom = () => {
 
     const handleCreateMessage = async (text: string) => {
         try {
+            const tempId: number = Math.floor(1000 + Math.random() * 9000);
+            const tempMessage: IMessage = {
+                text,
+                id: tempId,
+                created: new Date().toISOString(),
+                sender: {
+                    avatar: self?.photoURL!,
+                    username: self?.email!,
+                    first_name: self?.displayName!,
+                },
+            };
+            dispatch(
+                addNewMessage({ chatId: current_id!, message: tempMessage })
+            );
             const { data } = await createMessage(
                 import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID,
                 self?.email!,
@@ -39,15 +58,30 @@ const ContentBottom = () => {
                 current_id!,
                 text
             );
-            dispatch(addNewMessage({ chatId: current_id!, message: data }));
+            dispatch(
+                replaceTempMessage({
+                    chatId: current_id!,
+                    message: data,
+                    tempMessageId: tempId,
+                })
+            );
             console.log(data);
         } catch (error) {
             console.error(error);
         }
     };
+
+    const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            console.log("Enter key pressed!");
+            formik.handleSubmit(event as any);
+            event.preventDefault();
+        }
+    };
     return (
         <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 bg-blue-400">
             <Textarea
+                onKeyDown={handleKeyPress}
                 id="text"
                 onChange={formik.handleChange}
                 value={formik.values.text}

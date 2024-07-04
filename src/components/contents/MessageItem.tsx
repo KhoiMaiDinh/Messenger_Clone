@@ -5,15 +5,21 @@ export type TMessageStatus = "start" | "middle" | "end" | "alone";
 
 type TComponentProps = {
     text: string;
+    id: number;
     imgUrl?: string;
+    opponentImgUrl?: string;
     isSelf: boolean;
+    isSeen?: boolean;
     type: TMessageStatus;
 };
 
 const MessageItem: FunctionComponent<TComponentProps> = ({
     text,
+    id,
     imgUrl,
+    opponentImgUrl,
     isSelf,
+    isSeen = false,
     type,
 }) => {
     const startLeftClassName = "rounded-[18px] rounded-bl-[4px] ";
@@ -42,17 +48,35 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
         }
     };
     return (
-        <div className={`flex pl-3 gap-2 pr-2 ${isSelf ? right : left}`}>
-            {!isSelf && <AvatarComponent imgUrl={imgUrl} />}
-            <div
-                className={
-                    `flex max-w-1/2 md:max-w-[67%] ${
-                        isSelf ? "bg-blue-500" : "bg-[#F0F0F0]"
-                    } w-fit px-3 py-2 ` + getClassName(isSelf, type)
-                }
-            >
-                <p className="w-full break-words text-[15px]">{text}</p>
+        <div className="flex flex-col">
+            <div className={`flex pl-3 gap-2 pr-2 ${isSelf ? right : left}`}>
+                {!isSelf && <AvatarComponent imgUrl={imgUrl} />}
+                <div
+                    className={
+                        `flex max-w-1/2 md:max-w-[67%] ${
+                            isSelf ? "bg-blue-500" : "bg-[#F0F0F0]"
+                        } w-fit px-3 py-2 ` + getClassName(isSelf, type)
+                    }
+                >
+                    <p className="w-full break-words text-[15px]">{text}</p>
+                </div>
             </div>
+            {isSeen && (
+                <div className="flex justify-end h-[21px] pr-2 items-center">
+                    <AvatarComponent
+                        imgUrl={opponentImgUrl}
+                        sizeClass="w-[14px] h-[14px]"
+                    />
+                </div>
+            )}
+            {id <= 9999 && (
+                <div className="flex justify-end h-4 pr-2">
+                    {isSeen && <AvatarComponent imgUrl={imgUrl} />}
+                    <span className="text-white dark:text-[#65676B] text-[12px] ">
+                        Đang gửi
+                    </span>
+                </div>
+            )}
         </div>
     );
 };

@@ -6,6 +6,8 @@ import defaultAvt from "@/assets/images/default_avt.png";
 import { IC_X } from "@/assets/icons";
 import { useParams } from "react-router-dom";
 import { ILastMessage } from "@/types/Chat";
+import { getTime } from "@/utils/time";
+import { useAuth } from "@/contexts/authContext";
 
 type TComponentProps = {
     userName: string;
@@ -28,20 +30,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
     onClick,
 }) => {
     const { id: current_id } = useParams();
-    const getTime = (iso_string: string) => {
-        let time: Date = new Date();
-        const now: Date = new Date();
-        if (iso_string) time = new Date(iso_string);
-        else return "";
-        const distance = (now.getTime() - time.getTime()) / 1000;
-        if (distance < 60) return "Bây giờ";
-        else if (distance < 60 * 60) return `${Math.round(distance / 60)} phút`;
-        else if (distance < 60 * 60 * 24)
-            return `${Math.round(distance / (60 * 60))} giờ`;
-        else if (distance < 60 * 60 * 24 * 7)
-            `${Math.round(distance / (60 * 60 * 24))} ngày`;
-        else return `${Math.round(distance / (60 * 60 * 24 * 7))} tuần`;
-    };
+    const { user } = useAuth();
     return (
         <div className=" w-full h-[68px] p-[4px] rounded-sm group">
             {/* <div className=" flex flex-1 flex-row h-full "> */}
@@ -61,18 +50,26 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                     <span className="text-[15px] font-medium">{userName}</span>
                     {/* <div className="block w-full h-2" /> */}
                     {lastMessage && (
-                        <div
-                            className={`flex text-[13px] leading-4 ${
-                                lastReadMessageId == lastMessage.id
-                                    ? "font-normal"
-                                    : "font-bold"
-                            }`}
-                        >
-                            <span className="inline">{lastMessage.text}</span>
-                            <span className="inline px-[2px]">·</span>
-                            <span className="inline">
-                                {getTime(lastMessage.created)}
-                            </span>
+                        <div className={`flex`}>
+                            <p className=" w-full min-w-0 text-[13px] leading-4 flex items-center ">
+                                <span
+                                    className={`${
+                                        lastReadMessageId == lastMessage.id
+                                            ? "font-normal"
+                                            : "font-bold"
+                                    } inline-block overflow-hidden break-words  truncate lg:max-w-[200px]`}
+                                >
+                                    {lastMessage.sender_username == user?.email
+                                        ? "Bạn: "
+                                        : ``}
+
+                                    {lastMessage.text}
+                                </span>
+                                <span className="inline px-[2px]">·</span>
+                                <span className="inline">
+                                    {getTime(lastMessage.created)}
+                                </span>
+                            </p>
                         </div>
                     )}
                 </div>

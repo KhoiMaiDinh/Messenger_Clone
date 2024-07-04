@@ -30,7 +30,7 @@ export const messagesSlice = createSlice({
         },
         addNewMessage: (
             state,
-            action: PayloadAction<{ chatId: string; message: any }>
+            action: PayloadAction<{ chatId: string; message: IMessage }>
         ) => {
             const chatExisted = state.findIndex(
                 (chat) => chat.chatId == action.payload.chatId
@@ -42,11 +42,33 @@ export const messagesSlice = createSlice({
                 });
             else state[chatExisted].messages.push(action.payload.message);
         },
+        replaceTempMessage: (
+            state,
+            action: PayloadAction<{
+                chatId: string;
+                message: IMessage;
+                tempMessageId: number;
+            }>
+        ) => {
+            const chatExisted = state.findIndex(
+                (chat) => chat.chatId == action.payload.chatId
+            );
+            if (chatExisted == -1) return;
+            const index = state[chatExisted].messages.findIndex(
+                (mes) => mes.id == action.payload.tempMessageId
+            );
+            if (index == -1) return;
+            Object.assign(
+                state[chatExisted].messages[index],
+                action.payload.message
+            );
+        },
     },
 });
 
 // Action creators are generated for each case reducer function
-export const { fetchMessages, addNewMessage } = messagesSlice.actions;
+export const { fetchMessages, addNewMessage, replaceTempMessage } =
+    messagesSlice.actions;
 
 const messageReducer = messagesSlice.reducer;
 export default messageReducer;

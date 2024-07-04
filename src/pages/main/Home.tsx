@@ -8,7 +8,11 @@ import MessageContent from "@/components/contents/MessageContent";
 import { useAuth } from "@/contexts/authContext";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewMessage } from "@/app/features/message/messageSlice";
-import { addToBeginning, editChat } from "@/app/features/chat/chatSlice";
+import {
+    addToBeginning,
+    editAndMoveToStart,
+    editChat,
+} from "@/app/features/chat/chatSlice";
 import { readMessage } from "@/api/message";
 import { useParams } from "react-router-dom";
 import { RootState } from "@/app/store";
@@ -65,11 +69,11 @@ function Home() {
                             message: data.message,
                         })
                     );
-                    if (chat_id === data.id)
+                    if (chat_id == data.id)
                         readChats(data.message.id).catch(console.error);
                     break;
                 case "edit_chat":
-                    dispatch(editChat(data));
+                    dispatch(editAndMoveToStart(data));
                     break;
                 default:
                     // console.log(data);

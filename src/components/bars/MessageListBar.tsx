@@ -75,7 +75,7 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
                         imgUrl={getOpponent(chat)?.person.avatar!}
                         key={chat.id}
                         lastMessage={chat.last_message}
-                        userName={getOpponent(chat)?.person.username!}
+                        userName={getOpponent(chat)?.person.first_name!}
                         lastReadMessageId={getSelf(chat)?.last_read!}
                         onClick={() => handleClick(chat.id)}
                     />
