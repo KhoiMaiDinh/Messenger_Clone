@@ -26,9 +26,9 @@ const ContentBottom = () => {
             text: "",
         },
         onSubmit: (values, onSubmitProps) => {
-            handleCreateMessage(values.text).then(() =>
-                onSubmitProps.resetForm()
-            );
+            let text = values.text;
+            onSubmitProps.resetForm();
+            handleCreateMessage(text).then(() => onSubmitProps.resetForm());
         },
         validationSchema: Yup.object({
             text: Yup.string().required(),
@@ -79,7 +79,7 @@ const ContentBottom = () => {
         }
     };
     return (
-        <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 bg-blue-400">
+        <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 bg-blue-400 mt-[2px]">
             <Textarea
                 onKeyDown={handleKeyPress}
                 id="text"

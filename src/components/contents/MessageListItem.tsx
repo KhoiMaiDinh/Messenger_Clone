@@ -49,27 +49,30 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                 <div className="flex flex-1 flex-col text-start pl-[10px]">
                     <span className="text-[15px] font-medium">{userName}</span>
                     {/* <div className="block w-full h-2" /> */}
-                    {lastMessage && (
+                    {lastMessage?.text && (
                         <div className={`flex`}>
-                            <p className=" w-full min-w-0 text-[13px] leading-4 flex items-center ">
-                                <span
-                                    className={`${
-                                        lastReadMessageId == lastMessage.id
-                                            ? "font-normal"
-                                            : "font-bold"
-                                    } inline-block overflow-hidden break-words  truncate lg:max-w-[200px]`}
-                                >
-                                    {lastMessage.sender_username == user?.email
-                                        ? "Bạn: "
-                                        : ``}
+                            {lastMessage && (
+                                <p className=" w-full min-w-0 text-[13px] leading-4 flex items-center ">
+                                    <span
+                                        className={`${
+                                            lastReadMessageId == lastMessage.id
+                                                ? "font-normal"
+                                                : "font-bold"
+                                        } inline-block overflow-hidden break-words  truncate lg:max-w-[200px]`}
+                                    >
+                                        {lastMessage.sender_username ==
+                                        user?.email
+                                            ? "Bạn: "
+                                            : ``}
 
-                                    {lastMessage.text}
-                                </span>
-                                <span className="inline px-[2px]">·</span>
-                                <span className="inline">
-                                    {getTime(lastMessage.created)}
-                                </span>
-                            </p>
+                                        {lastMessage.text}
+                                    </span>
+                                    <span className="inline px-[2px]">·</span>
+                                    <span className="inline">
+                                        {getTime(lastMessage.created)}
+                                    </span>
+                                </p>
+                            )}
                         </div>
                     )}
                 </div>

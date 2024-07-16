@@ -1,4 +1,5 @@
 import { IChat } from "@/types/Chat";
+import { updateObject } from "@/utils/object";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -27,14 +28,17 @@ export const chatsSlice = createSlice({
             const index = state.chats.findIndex(
                 (chat) => chat.id == action.payload.id
             );
-            state.chats[index] = action.payload;
+            Object.assign(state.chats[index], action.payload);
         },
         editAndMoveToStart: (state, action: PayloadAction<IChat>) => {
             const index = state.chats.findIndex(
                 (chat) => chat.id == action.payload.id
             );
-            const removed = state.chats.splice(index, 1);
-            state.chats.unshift(action.payload);
+            if (index == 0) {
+                updateObject(state.chats[0], action.payload);
+            }
+            // const removed = state.chats.splice(index, 1);
+            // state.chats.unshift(action.payload);
         },
     },
 });

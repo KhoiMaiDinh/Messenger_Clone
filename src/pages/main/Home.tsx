@@ -16,6 +16,7 @@ import {
 import { readMessage } from "@/api/message";
 import { useParams } from "react-router-dom";
 import { RootState } from "@/app/store";
+import InfoAndSettingBar from "@/components/bars/InfoAndSettingBar";
 
 function Home() {
     const { user } = useAuth();
@@ -100,6 +101,7 @@ function Home() {
             {/* <SidebarButton Icon={MessageIcon} /> */}
             <MessageListBar isNewChat={isNewChat} setIsNewChat={setIsNewChat} />
             <MessageContent isNewChat={isNewChat} setIsNewChat={setIsNewChat} />
+            <InfoAndSettingBar />
         </div>
     );
 }

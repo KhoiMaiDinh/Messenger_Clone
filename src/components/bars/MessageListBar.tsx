@@ -52,7 +52,7 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
         getChats().catch(console.error);
     }, []);
     return (
-        <div className="flex flex-col w-[88px] md:w-[360px] bg-white rounded-xl md">
+        <div className="flex flex-col max-md:w-[88px] flex-1 bg-white rounded-xl md">
             <MessageListHeader
                 setIsNewChat={setIsNewChat}
                 isScrolled={isScrolled}

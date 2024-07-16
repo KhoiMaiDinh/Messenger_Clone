@@ -7,3 +7,6 @@ export { default as IC_Google } from "@/assets/icons/googleIcon";
 export { default as IC_SignOut } from "@/assets/icons/signOutIcon";
 export { default as IC_X } from "@/assets/icons/xIcon";
 export { default as IC_Send } from "@/assets/icons/sendIcon";
+export { default as IC_Arrow } from "@/assets/icons/arrowIcon";
+export { default as IC_More } from "@/assets/icons/moreIcon";
+export { default as IC_Less } from "@/assets/icons/lessIcon";

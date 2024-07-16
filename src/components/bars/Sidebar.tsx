@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import SidebarButton from "@/components/buttons/SidebarButton";
 import { IC_Image, IC_Message, IC_SignOut } from "@/assets/icons";
 import { auth } from "@/firebaseConfig";
+import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/authContext";
-import api from "@/api/apiInstance";
-import { fetchChats } from "@/api/chat";
 
 const Sidebar = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const handleSignOut = async () => {
-        await auth.signOut();
+        await signOut(auth);
         navigate("/sign-in");
     };
 
@@ -25,7 +24,7 @@ const Sidebar = () => {
                 <SidebarButton
                     url={user?.photoURL}
                     buttonClassName="rounded-full"
-                    onClick={handleSignOut}
+                    // onClick={handleSignOut}
                 />
                 <SidebarButton
                     Icon={IC_SignOut}
