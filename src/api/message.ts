@@ -45,6 +45,7 @@ const readMessage = async (
     chat_id: string,
     last_read: number
 ) => {
+    console.log("readMessage");
     return await api.patch(
         `/chats/${chat_id}/people/`,
         {

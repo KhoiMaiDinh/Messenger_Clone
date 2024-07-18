@@ -12,12 +12,17 @@ import { getTime } from "@/utils/time";
 
 type TComponentProps = {
     isNewChat: boolean;
+    onClick: () => void;
 };
 
-const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
+const ContentBody: FunctionComponent<TComponentProps> = ({
+    isNewChat,
+    onClick,
+}) => {
     const { id: chat_id } = useParams();
     const { user: self } = useAuth();
     const dispatch = useDispatch();
+
     const messages = useSelector((state: RootState) =>
         state.messages.find((mes) => mes.chatId.toString() == chat_id)
     );
@@ -28,7 +33,11 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
             })
             ?.people.find((p) => p.person.username != self?.email)
     );
-
+    const avatars = useSelector((state: RootState) => state.chats.avatars);
+    const getAvatar = () => {
+        return avatars.find((a) => a.username == opponent?.person.username)
+            ?.avatar_url;
+    };
     useEffect(() => {
         const fetch20NewestChats = async () => {
             return await getLatestChats(
@@ -176,7 +185,10 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
         return hourString + ":" + minuteString + " " + dayString;
     };
     return (
-        <div className="flex flex-col-reverse flex-1 relative overflow-y-scroll z-10 gap-[2px]">
+        <div
+            onClick={onClick}
+            className="flex flex-col-reverse flex-1  overflow-y-scroll z-10 gap-[2px]"
+        >
             {messages?.messages.at(-1)?.id! > 9999 &&
                 opponent?.last_read != messages?.messages.at(-1)?.id && (
                     <div className="flex justify-end h-4 pr-2">
@@ -200,7 +212,7 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
                             .slice(0)
                             .reverse()
                             .map((mes, index) => (
-                                <div>
+                                <div key={index}>
                                     {getDiffMinutesWithPre(
                                         messages.messages.slice(0).reverse(),
                                         index
@@ -218,11 +230,16 @@ const ContentBody: FunctionComponent<TComponentProps> = ({ isNewChat }) => {
                                         }
                                         isSeen={opponent?.last_read == mes.id}
                                         opponentImgUrl={
-                                            opponent?.last_read == mes.id
-                                                ? opponent.person.avatar
-                                                : undefined
+                                            // opponent?.last_read == mes.id
+                                            true ? getAvatar() : undefined
                                         }
-                                        imgUrl={mes.sender.avatar}
+                                        imgUrl={
+                                            avatars.find(
+                                                (a) =>
+                                                    mes.sender.username ==
+                                                    a.username
+                                            )?.avatar_url
+                                        }
                                         type={getMessageStatus(
                                             messages.messages
                                                 .slice(0)

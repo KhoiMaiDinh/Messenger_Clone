@@ -18,6 +18,7 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const chats = useSelector((state: RootState) => state.chats.chats);
+    const avatars = useSelector((state: RootState) => state.chats.avatars);
     const dispatch = useDispatch();
 
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -35,7 +36,11 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     const getSelf = (chat: IChat) => {
         return chat.people.find((p) => p.person.username == user?.email);
     };
-
+    const getAvatar = (chat: IChat) => {
+        return avatars.find(
+            (a) => a.username == getOpponent(chat)?.person.username
+        )?.avatar_url;
+    };
     function handleClick(id: number) {
         navigate(`/${id}`);
     }
@@ -46,11 +51,14 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
                 user?.email!,
                 user?.uid!
             );
-            dispatch(fetch(fetchedChats.data));
+            dispatch(
+                fetch({ chats: fetchedChats.data, self_username: user?.email! })
+            );
         };
 
         getChats().catch(console.error);
     }, []);
+
     return (
         <div className="flex flex-col max-md:w-[88px] flex-1 bg-white rounded-xl md">
             <MessageListHeader
@@ -72,7 +80,7 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
                     <MessageItem
                         chatId={chat.id}
                         isOnline={getOpponent(chat)?.person.is_online!}
-                        imgUrl={getOpponent(chat)?.person.avatar!}
+                        imgUrl={getAvatar(chat)}
                         key={chat.id}
                         lastMessage={chat.last_message}
                         userName={getOpponent(chat)?.person.first_name!}

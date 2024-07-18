@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function LessIcon() {
+export default function LessIcon({color}:{color: string}) {
     return (
         <svg
-            fill="var(--mwp-header-button-color)"
+            fill={color}
             height="28px"
             role="presentation"
             viewBox="0 0 36 36"

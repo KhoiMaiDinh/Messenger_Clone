@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import AvatarComponent from "@/components/others/Avatar";
 import defaultAvt from "@/assets/images/default_avt.png";
@@ -31,8 +31,11 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
 }) => {
     const { id: current_id } = useParams();
     const { user } = useAuth();
+    const avatarMemo = useMemo(() => {
+        return imgUrl;
+    }, [imgUrl]);
     return (
-        <div className=" w-full h-[68px] p-[4px] rounded-sm group">
+        <div className=" w-full h-[68px] py-[1px] px-[4px] rounded-sm group">
             {/* <div className=" flex flex-1 flex-row h-full "> */}
             <Button
                 onClick={onClick}
@@ -43,7 +46,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                 <AvatarComponent
                     sizeClass={"w-[48px] h-[48px]"}
                     isOnline={isOnline}
-                    imgUrl={imgUrl}
+                    imgUrl={avatarMemo}
                 />
 
                 <div className="flex flex-1 flex-col text-start pl-[10px]">
@@ -65,7 +68,10 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                                             ? "Bạn: "
                                             : ``}
 
-                                        {lastMessage.text}
+                                        {lastMessage.text.replace(
+                                            /\[nl\]/g,
+                                            "\n"
+                                        )}
                                     </span>
                                     <span className="inline px-[2px]">·</span>
                                     <span className="inline">

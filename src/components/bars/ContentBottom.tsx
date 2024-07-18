@@ -1,4 +1,9 @@
-import { KeyboardEvent } from "react";
+import {
+    FunctionComponent,
+    KeyboardEvent,
+    MutableRefObject,
+    useEffect,
+} from "react";
 import * as Yup from "yup";
 import { Button, Input, Textarea } from "@nextui-org/react";
 import { useFormik } from "formik";
@@ -16,7 +21,10 @@ import { IC_Send, IC_Smile } from "@/assets/icons";
 import { useAuth } from "@/contexts/authContext";
 import { IMessage } from "@/types/Message";
 
-const ContentBottom = () => {
+type TComponentProps = {
+    inputRef: MutableRefObject<HTMLTextAreaElement | null>;
+};
+const ContentBottom: FunctionComponent<TComponentProps> = ({ inputRef }) => {
     const { id: current_id } = useParams();
     const { user: self } = useAuth();
     const dispatch = useDispatch();
@@ -28,7 +36,9 @@ const ContentBottom = () => {
         onSubmit: (values, onSubmitProps) => {
             let text = values.text;
             onSubmitProps.resetForm();
-            handleCreateMessage(text).then(() => onSubmitProps.resetForm());
+            text = text.replace(/\n/g, "[nl]").trim();
+
+            handleCreateMessage(text).catch((e) => console.error(e));
         },
         validationSchema: Yup.object({
             text: Yup.string().required(),
@@ -79,8 +89,9 @@ const ContentBottom = () => {
         }
     };
     return (
-        <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 bg-blue-400 mt-[2px]">
+        <div className="flex flex-row w-full min-h-[60px] py-3 items-center gap-2 px-2 border-t-1 border-[#10DDFF] mt-[2px] ">
             <Textarea
+                ref={inputRef}
                 onKeyDown={handleKeyPress}
                 id="text"
                 onChange={formik.handleChange}
@@ -98,16 +109,16 @@ const ContentBottom = () => {
                 }}
                 endContent={
                     <button className="flex p-0 rounded-full self-end">
-                        <IC_Smile />
+                        <IC_Smile color="#10DDFF" />
                     </button>
                 }
             />
             <button
                 type="button"
                 onClick={(e) => formik.handleSubmit(e as any)}
-                className="flex p-0 rounded-full h-[36px] w-[36px] items-center justify-center bg-[#f9f9f9c5] hover:bg-white"
+                className="flex p-0 rounded-full h-[36px] w-[36px] items-center justify-center bg-transparent hover:bg-white"
             >
-                <IC_Send />
+                <IC_Send color="#10DDFF" />
             </button>
         </div>
     );

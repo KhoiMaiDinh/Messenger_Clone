@@ -32,6 +32,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
     const StandAloneClassName = "rounded-[18px]";
     const left = "justify-start";
     const right = "justify-end ";
+    // console.log(text);s
 
     const getClassName = (isSelf: boolean, type: string) => {
         if (type == "alone") return StandAloneClassName;
@@ -47,18 +48,34 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
             if (type == "end") return endLeftClassName;
         }
     };
+    const stringWithBrTags = text.replace(/\[nl\]/g, "\n");
     return (
         <div className="flex flex-col">
             <div className={`flex pl-3 gap-2 pr-2 ${isSelf ? right : left}`}>
-                {!isSelf && <AvatarComponent imgUrl={imgUrl} />}
+                {!isSelf && (
+                    <AvatarComponent
+                        imgUrl={imgUrl}
+                        sizeClass={`w-[28px] h-[28px] ${
+                            type == "end" || type == "alone" ? "" : "invisible"
+                        }`}
+                    />
+                )}
                 <div
                     className={
                         `flex max-w-1/2 md:max-w-[67%] ${
-                            isSelf ? "bg-blue-500" : "bg-[#F0F0F0]"
-                        } w-fit px-3 py-2 ` + getClassName(isSelf, type)
+                            isSelf
+                                ? "bg-gradient-to-b from-[#FFBCD1] via-[#BD95EB] to-[#10DDFF] bg-fixed "
+                                : "bg-[#F0F0F0]"
+                        } w-fit px-3 py-2  ` + getClassName(isSelf, type)
                     }
                 >
-                    <p className="w-full break-words text-[15px]">{text}</p>
+                    <p
+                        className={`w-full break-words text-[15px] whitespace-pre  ${
+                            isSelf ? "text-white" : "text-black"
+                        }`}
+                    >
+                        {stringWithBrTags}
+                    </p>
                 </div>
             </div>
             {isSeen && (
@@ -71,7 +88,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
             )}
             {id <= 9999 && (
                 <div className="flex justify-end h-4 pr-2">
-                    {isSeen && <AvatarComponent imgUrl={imgUrl} />}
+                    {/* {isSeen && <AvatarComponent imgUrl={imgUrl} />} */}
                     <span className="text-white dark:text-[#65676B] text-[12px] ">
                         Đang gửi
                     </span>

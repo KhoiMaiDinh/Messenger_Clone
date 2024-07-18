@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/react";
 import useWebSocket from "react-use-websocket";
 
@@ -17,42 +17,60 @@ import { readMessage } from "@/api/message";
 import { useParams } from "react-router-dom";
 import { RootState } from "@/app/store";
 import InfoAndSettingBar from "@/components/bars/InfoAndSettingBar";
+import { IChat } from "@/types/Chat";
 
 function Home() {
     const { user } = useAuth();
-    const [isNewChat, setIsNewChat] = useState<boolean>(false);
     const dispatch = useDispatch();
     const { id: chat_id } = useParams();
 
     const project_id = import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID;
     const user_name = user?.email!;
     const user_secret = user?.uid!;
+
+    const [isNewChat, setIsNewChat] = useState<boolean>(false);
+    const [isOpenInfo, setIsOpenInfo] = useState<boolean>(false);
+
     const messagesOfId = useSelector((state: RootState) =>
         state.messages.find((message) => message.chatId == chat_id)
     );
+    const chats = useSelector((state: RootState) => state.chats.chats);
+    const getChatById = async (chats: IChat[]) => {
+        return chats.find((chat) => chat.id.toString() == chat_id);
+    };
+    const getSelfInfo = async (chat: IChat | undefined) => {
+        return chat?.people.find((p) => p.person.username == user?.email);
+    };
 
     const socketUrl = `wss://api.chatengine.io/person/?publicKey=${project_id}&username=${user_name}&secret=${user_secret}`;
 
     const readChats = async (last_message_id: number | undefined) => {
+        let chatOfId = await getChatById(chats);
+        let selfInfo = await getSelfInfo(chatOfId);
+        console.log(last_message_id, selfInfo?.last_read);
         if (!chat_id || !last_message_id) return;
-        const { data } = await readMessage(
-            project_id,
-            user_name,
-            user_secret,
-            chat_id,
-            last_message_id
-        );
-        // const filteredData = data.filter(
-        //     (user) => self?.email != user.email
-        // );
-        // setUsers(filteredData);
+        if (last_message_id == selfInfo?.last_read) return;
+        try {
+            const res = await readMessage(
+                project_id,
+                user_name,
+                user_secret,
+                chat_id,
+                last_message_id
+            );
+            return res;
+        } catch (e) {
+            return e;
+        }
     };
 
-    // const [data, setData] = useState<any>(null);
-
     const { readyState } = useWebSocket(socketUrl, {
-        onOpen: () => console.log("opened"),
-        onClose: (event) => console.log(event),
+        onOpen: () => {
+            // console.log("opened");
+        },
+        onClose: (event) => {
+            // console.log(event);
+        },
         onMessage: (event) => {
             console.log(event?.data);
             const { action, data } = JSON.parse(event.data);
@@ -74,13 +92,12 @@ function Home() {
                         readChats(data.message.id).catch(console.error);
                     break;
                 case "edit_chat":
-                    dispatch(editAndMoveToStart(data));
+                    dispatch(editChat(data));
                     break;
                 default:
                     // console.log(data);
                     break;
             }
-            // setData(JSON.parse(event.data));
         },
         onError: (error) => console.log(error),
         shouldReconnect: (closeEvent) => true,
@@ -92,16 +109,19 @@ function Home() {
         readChats(lastMessageID).catch(console.error);
     }, [chat_id]);
 
-    // useEffect(() => {
-    //     console.log(JSON.parse(data).data);
-    // }, [data]);
     return (
         <div className=" w-screen flex-1 p-4 h-screen flex gap-4 bg-[#f5f5f5] -z-30">
             <Sidebar />
             {/* <SidebarButton Icon={MessageIcon} /> */}
             <MessageListBar isNewChat={isNewChat} setIsNewChat={setIsNewChat} />
-            <MessageContent isNewChat={isNewChat} setIsNewChat={setIsNewChat} />
-            <InfoAndSettingBar />
+            <MessageContent
+                isNewChat={isNewChat}
+                setIsNewChat={setIsNewChat}
+                setIsOpenInfo={setIsOpenInfo}
+                isOpenInfo={isOpenInfo}
+            />
+            {isOpenInfo && <InfoAndSettingBar />}
+            {/* {self?.last_read} */}
         </div>
     );
 }
