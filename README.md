@@ -1,5 +1,5 @@
-# React + TypeScript + Vite
-
+# Messenger Clone (React + TypeScript + Vite)
+![Poster](https://github.com/KhoiMaiDinh/Messenger_Clone/blob/main/poster.png?raw=true)
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
