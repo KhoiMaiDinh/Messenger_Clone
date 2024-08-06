@@ -10,3 +10,5 @@ export { default as IC_Send } from "@/assets/icons/sendIcon";
 export { default as IC_Arrow } from "@/assets/icons/arrowIcon";
 export { default as IC_More } from "@/assets/icons/moreIcon";
 export { default as IC_Less } from "@/assets/icons/lessIcon";
+export { default as IC_BigLike } from "@/assets/icons/likeBigIcon";
+export { default as IC_SmallLike } from "@/assets/icons/likeIcon";

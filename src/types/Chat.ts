@@ -4,6 +4,7 @@ export interface IChat {
     last_message: ILastMessage;
     title: string;
     people: { person: IPerson; last_read: number }[];
+    custom_json: string;
 }
 
 export interface ILastMessage {

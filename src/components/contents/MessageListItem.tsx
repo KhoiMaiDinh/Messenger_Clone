@@ -8,6 +8,9 @@ import { useParams } from "react-router-dom";
 import { ILastMessage } from "@/types/Chat";
 import { getTime } from "@/utils/time";
 import { useAuth } from "@/contexts/authContext";
+import { convertIconInString } from "@/utils/string";
+import parse from "html-react-parser";
+import { brRegex } from "@/const/regex";
 
 type TComponentProps = {
     userName: string;
@@ -31,9 +34,10 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
 }) => {
     const { id: current_id } = useParams();
     const { user } = useAuth();
-    const avatarMemo = useMemo(() => {
-        return imgUrl;
-    }, [imgUrl]);
+    const StringToElement = parse(
+        convertIconInString(lastMessage?.text.replace(brRegex, "\n")!)
+    );
+    const avatarMemo = imgUrl;
     return (
         <div className=" w-full h-[68px] py-[1px] px-[4px] rounded-sm group">
             {/* <div className=" flex flex-1 flex-row h-full "> */}
@@ -61,17 +65,14 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                                             lastReadMessageId == lastMessage.id
                                                 ? "font-normal"
                                                 : "font-bold"
-                                        } inline-block overflow-hidden break-words  truncate lg:max-w-[200px]`}
+                                        } inline-block overflow-hidden break-words  truncate lg:max-w-[200px] md:max-w-[100px]`}
                                     >
                                         {lastMessage.sender_username ==
                                         user?.email
                                             ? "Bạn: "
                                             : ``}
 
-                                        {lastMessage.text.replace(
-                                            /\[nl\]/g,
-                                            "\n"
-                                        )}
+                                        {StringToElement}
                                     </span>
                                     <span className="inline px-[2px]">·</span>
                                     <span className="inline">
@@ -84,13 +85,12 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                 </div>
                 {setIsNewChat && (
                     <div className="opacity-0 group-hover:opacity-100">
-                        <Button
-                            isIconOnly
-                            className=" rounded-full w-6 h-6 p-0 min-w-6 bg-[rgba(0, 0, 0, 0.5)]"
+                        <div
+                            className=" rounded-full w-6 h-6 p-0 min-w-6 bg-[#00000066] justify-center items-center flex hover:border-1 hover:border-black"
                             onClick={() => setIsNewChat(false)}
                         >
                             <IC_X />
-                        </Button>
+                        </div>
                     </div>
                 )}
             </Button>

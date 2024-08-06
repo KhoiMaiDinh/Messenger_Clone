@@ -1,9 +1,14 @@
 import { RootState } from "@/app/store";
-import { IC_Arrow, IC_Google, IC_Search } from "@/assets/icons";
+import { IC_Arrow, IC_Google, IC_Image, IC_Search } from "@/assets/icons";
 import { useAuth } from "@/contexts/authContext";
-import { Button, Tooltip } from "@nextui-org/react";
+import { Button, Tooltip, useDisclosure } from "@nextui-org/react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import ThemeModal from "@/components/modals/ThemeModal";
+import { useState } from "react";
+import InfoBarButton from "../buttons/InfoBarOuterButton";
+import { IC_SmallLike } from "@/assets/icons";
+import EmojiModal from "../modals/EmojiModal";
 
 type TScreenProps = {
     isNewChat: boolean;
@@ -19,12 +24,43 @@ const InfoAndSettingBar = ({}) => {
     const opponentInfo = chatInfo?.people.find(
         (person) => person.person.username != self?.email
     );
+    const theme = useSelector((state: RootState) => state.theme);
+    const {
+        isOpen: isThemeModalOpen,
+        onOpen: onThemeModalOpen,
+        onOpenChange: onThemeModalOpenChange,
+    } = useDisclosure();
+
+    const {
+        isOpen: isEmojiModalOpen,
+        onOpen: onEmojiModalOpen,
+        onOpenChange: onEmojiModalOpenChange,
+    } = useDisclosure();
 
     const copyToClipBoard = (text: string) => {
         navigator.clipboard.writeText(text);
     };
+
+    const ThemeIcon = (
+        <div className={`${theme.backgroundImage} w-full h-full bg-cover`} />
+    );
+
+    const EmojiIcon = (
+        <div className="w-3 h-3 ">
+            <IC_SmallLike width={12} height={12} fill={theme.endColor} />
+        </div>
+    );
     return (
         <div className="flex flex-col max-md:w-[88px] flex-1 bg-white text-black rounded-xl items-center">
+            <ThemeModal
+                isOpen={isThemeModalOpen}
+                onOpenChange={onThemeModalOpenChange}
+            />
+            <EmojiModal
+                isOpen={isEmojiModalOpen}
+                onOpenChange={onEmojiModalOpenChange}
+                // setIsOpen={setIsThemeModalOpen}
+            />
             <div className=" mt-4 mb-3 ">
                 <img
                     className="w-[72px] h-[72px] rounded-full"
@@ -87,15 +123,21 @@ const InfoAndSettingBar = ({}) => {
                     </span>
                 </div>
             </div>
-            <div className="flex flex-1 w-full py-5">
-                <div className="w-full h-11 px-2 flex ">
-                    <Button className="w-full items-center justify-between px-2 h-full rounded-md bg-white hover:bg-[#dad7d7] transition-transform-background">
-                        <span className="text-[15px] text-[#050505] font-semibold">
-                            Tùy chỉnh đoạn chat
-                        </span>
-                        <IC_Arrow />
-                    </Button>
-                </div>
+            <div className="flex flex-1 w-full py-5 flex-col">
+                <InfoBarButton text="Thông tin về đoạn chat" />
+                <InfoBarButton text="Tùy chỉnh đoạn chat">
+                    <InfoBarButton
+                        text="Đổi chủ đề"
+                        icon={ThemeIcon}
+                        onClick={onThemeModalOpen}
+                    />
+                    <InfoBarButton
+                        text="Thay đổi biểu tượng cảm xúc"
+                        icon={EmojiIcon}
+                        onClick={onEmojiModalOpen}
+                    />
+                </InfoBarButton>
+                <InfoBarButton text="File phương tiện, file và liên kết" />
             </div>
         </div>
     );

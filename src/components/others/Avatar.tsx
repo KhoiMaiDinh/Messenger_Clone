@@ -1,5 +1,5 @@
 import { Avatar } from "@nextui-org/react";
-import { FunctionComponent } from "react";
+import { FunctionComponent, memo } from "react";
 
 type TComponentProps = {
     isOnline?: boolean;
@@ -28,4 +28,4 @@ const AvatarComponent: FunctionComponent<TComponentProps> = ({
     );
 };
 
-export default AvatarComponent;
+export default memo(AvatarComponent);

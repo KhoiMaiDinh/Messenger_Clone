@@ -12,7 +12,7 @@ import { getTime } from "@/utils/time";
 
 type TComponentProps = {
     isNewChat: boolean;
-    onClick: () => void;
+    onClick: (e: any) => void;
 };
 
 const ContentBody: FunctionComponent<TComponentProps> = ({
@@ -186,7 +186,8 @@ const ContentBody: FunctionComponent<TComponentProps> = ({
     };
     return (
         <div
-            onClick={onClick}
+            id="content-body"
+            onClick={(e) => onClick(e)}
             className="flex flex-col-reverse flex-1  overflow-y-scroll z-10 gap-[2px]"
         >
             {messages?.messages.at(-1)?.id! > 9999 &&

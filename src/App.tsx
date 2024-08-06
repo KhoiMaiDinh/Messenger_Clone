@@ -33,11 +33,12 @@ const PrivateRoutes = () => {
         return file;
     };
 
-    useDidMountEffect(() => {
+    useEffect(() => {
         if (!user || user === null) {
             navigate("sign-in");
             return;
         }
+        console.log("a");
 
         api.get("/users/me/", {
             headers: {
@@ -48,7 +49,7 @@ const PrivateRoutes = () => {
         })
             .then(() => console.log("User existed"))
             .catch((e) => {
-                console.log(e.response);
+                console.log("Sign in error: ", e.response);
                 let formdata = new FormData();
                 user.email && formdata.append("email", user.email);
                 user.email && formdata.append("username", user.email);
@@ -72,7 +73,7 @@ const PrivateRoutes = () => {
                     });
             });
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    }, []);
+    }, [user]);
     // if (user == null) return <Navigate to="/sign-in" replace />;
     return <Outlet />;
 };

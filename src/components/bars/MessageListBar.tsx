@@ -22,6 +22,20 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     const dispatch = useDispatch();
 
     const [isScrolled, setIsScrolled] = useState<boolean>(false);
+    useEffect(() => {
+        const getChats = async () => {
+            const fetchedChats = await fetchChats(
+                import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID,
+                user?.email!,
+                user?.uid!
+            );
+            dispatch(
+                fetch({ chats: fetchedChats.data, self_username: user?.email! })
+            );
+        };
+
+        getChats().catch(console.error);
+    }, []);
     const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
         if ((event.target as HTMLDivElement).scrollTop > 0) {
             setIsScrolled(true);
@@ -44,23 +58,9 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
     function handleClick(id: number) {
         navigate(`/${id}`);
     }
-    useEffect(() => {
-        const getChats = async () => {
-            const fetchedChats = await fetchChats(
-                import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID,
-                user?.email!,
-                user?.uid!
-            );
-            dispatch(
-                fetch({ chats: fetchedChats.data, self_username: user?.email! })
-            );
-        };
-
-        getChats().catch(console.error);
-    }, []);
 
     return (
-        <div className="flex flex-col max-md:w-[88px] flex-1 bg-white rounded-xl md">
+        <div className="flex flex-col w-[88px] flex-1 bg-white rounded-xl md ">
             <MessageListHeader
                 setIsNewChat={setIsNewChat}
                 isScrolled={isScrolled}

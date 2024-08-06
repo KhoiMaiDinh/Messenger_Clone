@@ -18,6 +18,9 @@ import { useParams } from "react-router-dom";
 import { RootState } from "@/app/store";
 import InfoAndSettingBar from "@/components/bars/InfoAndSettingBar";
 import { IChat } from "@/types/Chat";
+import { updateTheme } from "@/app/features/theme/themeSlice";
+import ThemeSets from "@/app/features/theme/themeConstance";
+import { updateEmoji } from "@/app/features/emoji/emojiSlice";
 
 function Home() {
     const { user } = useAuth();
@@ -35,7 +38,8 @@ function Home() {
         state.messages.find((message) => message.chatId == chat_id)
     );
     const chats = useSelector((state: RootState) => state.chats.chats);
-    const getChatById = async (chats: IChat[]) => {
+    const theme = useSelector((state: RootState) => state.theme);
+    const getChatById = (chats: IChat[]) => {
         return chats.find((chat) => chat.id.toString() == chat_id);
     };
     const getSelfInfo = async (chat: IChat | undefined) => {
@@ -45,7 +49,7 @@ function Home() {
     const socketUrl = `wss://api.chatengine.io/person/?publicKey=${project_id}&username=${user_name}&secret=${user_secret}`;
 
     const readChats = async (last_message_id: number | undefined) => {
-        let chatOfId = await getChatById(chats);
+        let chatOfId = getChatById(chats);
         let selfInfo = await getSelfInfo(chatOfId);
         console.log(last_message_id, selfInfo?.last_read);
         if (!chat_id || !last_message_id) return;
@@ -66,10 +70,10 @@ function Home() {
 
     const { readyState } = useWebSocket(socketUrl, {
         onOpen: () => {
-            // console.log("opened");
+            console.log("opened");
         },
         onClose: (event) => {
-            // console.log(event);
+            console.log("closed");
         },
         onMessage: (event) => {
             console.log(event?.data);
@@ -93,6 +97,27 @@ function Home() {
                     break;
                 case "edit_chat":
                     dispatch(editChat(data));
+                    if (data.id == chat_id && "custom_json" in data) {
+                        const jsonString = data.custom_json;
+                        const json = JSON.parse(jsonString);
+                        if ("theme" in json && json.theme != theme.key)
+                            console.log(
+                                ThemeSets[json.theme as keyof typeof ThemeSets]
+                            );
+                        dispatch(
+                            updateTheme({
+                                newTheme:
+                                    ThemeSets[
+                                        json.theme as keyof typeof ThemeSets
+                                    ],
+                            })
+                        );
+                        dispatch(
+                            updateEmoji({
+                                newEmojiCode: json.emoji,
+                            })
+                        );
+                    }
                     break;
                 default:
                     // console.log(data);
@@ -105,6 +130,23 @@ function Home() {
 
     useEffect(() => {
         const lastMessageID = messagesOfId?.messages.at(-1)?.id;
+        const chatOfID = getChatById(chats);
+        if (chatOfID != undefined && "custom_json" in chatOfID) {
+            dispatch(
+                updateTheme({
+                    newTheme:
+                        ThemeSets[
+                            JSON.parse(chatOfID.custom_json)
+                                .theme as keyof typeof ThemeSets
+                        ],
+                })
+            );
+            dispatch(
+                updateEmoji({
+                    newEmojiCode: JSON.parse(chatOfID.custom_json).emoji,
+                })
+            );
+        }
 
         readChats(lastMessageID).catch(console.error);
     }, [chat_id]);
@@ -121,7 +163,6 @@ function Home() {
                 isOpenInfo={isOpenInfo}
             />
             {isOpenInfo && <InfoAndSettingBar />}
-            {/* {self?.last_read} */}
         </div>
     );
 }

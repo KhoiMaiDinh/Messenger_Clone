@@ -13,9 +13,8 @@ import { IUser } from "@/types/User";
 import { Button } from "@nextui-org/react";
 import { createChat } from "@/api/chat";
 import { useDispatch, useSelector } from "react-redux";
-import { addToBeginning } from "@/app/features/chat/chatSlice";
 import { RootState } from "@/app/store";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IC_Less, IC_More } from "@/assets/icons";
 
 type TComponentProps = {
@@ -33,6 +32,15 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
 }) => {
     const { user: self } = useAuth();
     const { id: chat_id } = useParams();
+    const navigate = useNavigate();
+
+    const [users, setUsers] = useState<IUser[]>([]);
+    const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
+    const [visible, setVisible] = useState(false);
+    const [newUsername, setNewUsername] = useState<string>();
+
+    const ref = useRef<HTMLDivElement>(null);
+
     const opponent = useSelector((state: RootState) =>
         state.chats.chats
             .find((chat) => {
@@ -40,15 +48,10 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
             })
             ?.people.find((p) => p.person.username != self?.email)
     );
-
-    const [users, setUsers] = useState<IUser[]>([]);
-    const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
-    const [visible, setVisible] = useState(false);
-
-    const ref = useRef<HTMLDivElement>(null);
-
     const existedChats = useSelector((state: RootState) => state.chats.chats);
     const avatars = useSelector((state: RootState) => state.chats.avatars);
+    const theme = useSelector((state: RootState) => state.theme);
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -70,6 +73,10 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
         };
     }, []);
 
+    useEffect(() => {
+        if (isNewChat == false) setNewUsername(undefined);
+    }, [isNewChat]);
+
     const handleClickOutside = (event: MouseEvent) => {
         if (ref.current && !ref.current.contains(event.target as Node)) {
             setVisible(false);
@@ -81,18 +88,28 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
             ?.avatar_url;
     };
 
+    const handleClickNewChat = (username: string) => {
+        handleCreateNewChat(
+            import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID,
+            self?.email!,
+            self?.uid!,
+            username
+        );
+        setNewUsername(username);
+    };
+
     const handleCreateNewChat = async (
         prj_id: string,
         usr_name: string,
         usr_secret: string,
         opponent_name: string
     ) => {
-        const isExisted = existedChats.some(
+        const theExistedChat = existedChats.find(
             (chat) =>
                 chat.is_direct_chat &&
                 chat.people.some((p) => p.person.username == opponent_name)
         );
-        if (isExisted) return;
+        if (theExistedChat != undefined) navigate(`/${theExistedChat.id}`);
         try {
             setIsLoadingCreate(true);
             const newChat = await createChat(
@@ -101,11 +118,11 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                 usr_secret,
                 opponent_name
             );
-            // dispatch(addToBeginning(newChat.data));
         } catch (e) {
             console.log(e);
         } finally {
             setIsLoadingCreate(false);
+            setVisible(false);
         }
 
         setIsNewChat(false);
@@ -124,9 +141,9 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                 )}
                 <div>
                     <span
-                        className={`text-[15px] text-white ${
-                            isNewChat ? "font-normal" : "font-semibold"
-                        }`}
+                        className={`text-[15px] 
+                            ${theme.isTextWhite ? "text-white " : "text-black "}
+                            ${isNewChat ? "font-normal" : "font-semibold"}`}
                     >
                         {isNewChat ? "Đến: " : opponent?.person.first_name}
                     </span>
@@ -148,17 +165,14 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                     >
                         {users.map((user) => (
                             <Button
-                                isLoading={isLoadingCreate}
+                                isLoading={
+                                    isLoadingCreate &&
+                                    newUsername == user.username
+                                }
                                 key={user.id}
-                                className={`min-h-[45px] dark:hover:bg-button w-full text-start px-2 text-sm font-normal flex items-center gap-3 hover:outline-none rounded-sm bg-white hover:bg-[#d7d3d3]`}
+                                className={`min-h-[45px] dark:hover:bg-button w-full text-start px-2 text-sm font-normal flex items-center justify-start gap-3 hover:outline-none rounded-sm bg-white hover:bg-[#d7d3d3]`}
                                 onClick={() =>
-                                    handleCreateNewChat(
-                                        import.meta.env
-                                            .VITE_CHAT_ENGINE_PROJECT_ID,
-                                        self?.email!,
-                                        self?.uid!,
-                                        user.username
-                                    )
+                                    handleClickNewChat(user.username)
                                 }
                             >
                                 <AvatarComponent
@@ -179,9 +193,9 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
                     onClick={() => setIsOpenInfo(!isOpenInfo)}
                 >
                     {isOpenInfo ? (
-                        <IC_More color="#FFBCD1" />
+                        <IC_More color={theme.startColor} />
                     ) : (
-                        <IC_Less color="#FFBCD1" />
+                        <IC_Less color={theme.startColor} />
                     )}
                 </Button>
             </div>

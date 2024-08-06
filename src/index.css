@@ -74,3 +74,17 @@ button:focus-visible {
         background-color: #f9f9f9;
     }
 }
+
+em-emoji-picker {
+    --background-rgb: 85, 170, 255;
+    --category-icon-size: 24px;
+    --font-size: 14px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #65676b;
+    box-shadow: none;
+
+    height: 50vh;
+    width: 100%;
+    /* min-height: 400px; */
+    max-height: 100%;
+}
