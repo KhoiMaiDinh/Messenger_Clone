@@ -26,13 +26,8 @@ type TComponentProps = {
 };
 
 export default function EmojiModal({ isOpen, onOpenChange }: TComponentProps) {
-    const text = [
-        "Có rất nhiều chủ đề để bạn lựa chọn và những chủ đề này đều khác nhau đôi chút.",
-        "Tin nhắn mà bạn gửi cho người khác sẽ có màu này.",
-        "Tin nhắn của bạn bè sẽ tương tự như thế này",
-    ];
     const { id: chat_id } = useParams();
-    const theme: any = ThemeSets;
+
     const { user: self } = useAuth();
 
     const currentChat = useSelector((state: RootState) =>
@@ -40,14 +35,7 @@ export default function EmojiModal({ isOpen, onOpenChange }: TComponentProps) {
     );
     const currentEmoji = useSelector((state: RootState) => state.emoji);
 
-    const dispatch = useDispatch();
-
-    const onClickItem = (theme: any) => {
-        // setSelectedTheme(theme);
-    };
-
     const onClickIcon = async (onClose: () => void, emoji: string) => {
-        // selectedTheme && dispatch(updateTheme({ newTheme: selectedTheme }));
         let custom_json = JSON.parse(currentChat?.custom_json!);
         custom_json = {
             ...custom_json,
@@ -63,7 +51,6 @@ export default function EmojiModal({ isOpen, onOpenChange }: TComponentProps) {
                     custom_json: JSON.stringify(custom_json),
                 }
             );
-            // console.log(res);
         } catch (err) {
             console.log(err);
         }

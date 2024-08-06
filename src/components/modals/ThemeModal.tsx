@@ -33,8 +33,9 @@ export default function ThemeModal({ isOpen, onOpenChange }: TComponentProps) {
     const { user: self } = useAuth();
 
     const currentTheme = useSelector((state: RootState) => state.theme);
-
-    const dispatch = useDispatch();
+    const currentChat = useSelector((state: RootState) =>
+        state.chats.chats.find((c) => c.id.toString() == chat_id)
+    );
 
     const [selectedTheme, setSelectedTheme] = useState<ThemeState>(
         ThemeSets.SPACE_THEME
@@ -49,8 +50,9 @@ export default function ThemeModal({ isOpen, onOpenChange }: TComponentProps) {
     };
 
     const onClickAccept = async (onClose: () => void) => {
-        // selectedTheme && dispatch(updateTheme({ newTheme: selectedTheme }));
-        const JsonTheme = {
+        let custom_json = JSON.parse(currentChat?.custom_json!);
+        custom_json = {
+            ...custom_json,
             theme: selectedTheme.key,
         };
         try {
@@ -60,7 +62,7 @@ export default function ThemeModal({ isOpen, onOpenChange }: TComponentProps) {
                 self?.uid!,
                 chat_id!,
                 {
-                    custom_json: JSON.stringify(JsonTheme),
+                    custom_json: JSON.stringify(custom_json),
                 }
             );
             // console.log(res);
