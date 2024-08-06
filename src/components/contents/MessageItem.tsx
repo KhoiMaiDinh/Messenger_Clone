@@ -1,4 +1,4 @@
-import { FunctionComponent, HTMLProps } from "react";
+import { FunctionComponent } from "react";
 import AvatarComponent from "../others/Avatar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/store";
@@ -83,6 +83,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                     onClick={stopClickPropagation}
                     className={`flex pl-3 gap-2 pr-2 ${isSelf ? right : left}`}
                 >
+                    <div className="w-[28px] h-[28px] invisible mr-1" />
                     <IC_SmallLike
                         width={32}
                         height={32}
@@ -99,6 +100,7 @@ const MessageItem: FunctionComponent<TComponentProps> = ({
                     onClick={stopClickPropagation}
                     className={`flex pl-3 gap-1 pr-2 ${isSelf ? right : left}`}
                 >
+                    <div className="w-[28px] h-[28px] invisible mr-1" />
                     {IconsAlone}
                 </div>
             </div>

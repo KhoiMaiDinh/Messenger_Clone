@@ -25,6 +25,7 @@ const InfoAndSettingBar = ({}) => {
         (person) => person.person.username != self?.email
     );
     const theme = useSelector((state: RootState) => state.theme);
+    const emoji = useSelector((state: RootState) => state.emoji);
     const {
         isOpen: isThemeModalOpen,
         onOpen: onThemeModalOpen,
@@ -46,8 +47,17 @@ const InfoAndSettingBar = ({}) => {
     );
 
     const EmojiIcon = (
-        <div className="w-3 h-3 ">
-            <IC_SmallLike width={12} height={12} fill={theme.endColor} />
+        <div className="w-3 h-3 flex items-center">
+            {emoji.emojiCode ? (
+                <em-emoji
+                    style={{ height: "24px" }}
+                    native={emoji.emojiCode}
+                    size={12}
+                    set="facebook"
+                />
+            ) : (
+                <IC_SmallLike width={12} height={12} fill={theme.endColor} />
+            )}
         </div>
     );
     return (

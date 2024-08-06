@@ -57,9 +57,11 @@ const ContentHeader: FunctionComponent<TComponentProps> = ({
     useEffect(() => {
         const getUsers = async () => {
             const { data }: { data: IUser[] } = await fetchUsers();
+            if (data == undefined) return;
             const filteredData = data.filter(
                 (user) => self?.email != user.email
             );
+
             setUsers(filteredData);
         };
 

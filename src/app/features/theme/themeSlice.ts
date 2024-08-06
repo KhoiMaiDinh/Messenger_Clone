@@ -14,7 +14,7 @@ export interface ThemeState {
     isTextWhite: boolean;
 }
 
-const initialState: ThemeState = ThemeSet.SPACE_THEME;
+const initialState: ThemeState = ThemeSet.DEFAULT_THEME;
 export const themeSlice = createSlice({
     name: "theme",
     initialState,

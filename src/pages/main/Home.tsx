@@ -12,6 +12,7 @@ import {
     addToBeginning,
     editAndMoveToStart,
     editChat,
+    fetch,
 } from "@/app/features/chat/chatSlice";
 import { readMessage } from "@/api/message";
 import { useParams } from "react-router-dom";
@@ -21,6 +22,7 @@ import { IChat } from "@/types/Chat";
 import { updateTheme } from "@/app/features/theme/themeSlice";
 import ThemeSets from "@/app/features/theme/themeConstance";
 import { updateEmoji } from "@/app/features/emoji/emojiSlice";
+import { fetchChats } from "@/api/chat";
 
 function Home() {
     const { user } = useAuth();
@@ -131,6 +133,7 @@ function Home() {
     useEffect(() => {
         const lastMessageID = messagesOfId?.messages.at(-1)?.id;
         const chatOfID = getChatById(chats);
+        if (!chatOfID) return;
         if (chatOfID != undefined && "custom_json" in chatOfID) {
             dispatch(
                 updateTheme({
@@ -150,6 +153,43 @@ function Home() {
 
         readChats(lastMessageID).catch(console.error);
     }, [chat_id]);
+
+    useEffect(() => {
+        const getChats = async () => {
+            const fetchedChats = await fetchChats(
+                import.meta.env.VITE_CHAT_ENGINE_PROJECT_ID,
+                user?.email!,
+                user?.uid!
+            );
+            dispatch(
+                fetch({ chats: fetchedChats.data, self_username: user?.email! })
+            );
+            let custom_json = {};
+            if (fetchedChats.data.at(0)?.custom_json) {
+                custom_json = JSON.parse(
+                    fetchedChats.data.at(0)?.custom_json || ""
+                );
+            }
+            console.log({ custom_json });
+            if (custom_json && "theme" in custom_json) {
+                dispatch(
+                    updateTheme({
+                        newTheme:
+                            ThemeSets[
+                                custom_json.theme as keyof typeof ThemeSets
+                            ],
+                    })
+                );
+            }
+            if (custom_json && "emoji" in custom_json) {
+                dispatch(
+                    updateEmoji({ newEmojiCode: custom_json.emoji as any })
+                );
+            }
+        };
+
+        getChats().catch(console.error);
+    }, []);
 
     return (
         <div className=" w-screen flex-1 p-4 h-screen flex gap-4 bg-[#f5f5f5] -z-30">

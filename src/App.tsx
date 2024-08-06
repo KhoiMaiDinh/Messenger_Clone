@@ -38,7 +38,6 @@ const PrivateRoutes = () => {
             navigate("sign-in");
             return;
         }
-        console.log("a");
 
         api.get("/users/me/", {
             headers: {

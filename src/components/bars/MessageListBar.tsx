@@ -8,6 +8,9 @@ import { RootState } from "@/app/store";
 import { fetch } from "@/app/features/chat/chatSlice";
 import { IChat } from "@/types/Chat";
 import { useNavigate } from "react-router-dom";
+import { updateEmoji } from "@/app/features/emoji/emojiSlice";
+import { updateTheme } from "@/app/features/theme/themeSlice";
+import ThemeSets from "@/app/features/theme/themeConstance";
 
 type TScreenProps = {
     isNewChat: boolean;
@@ -32,6 +35,28 @@ const MessageListBar = ({ isNewChat, setIsNewChat }: TScreenProps) => {
             dispatch(
                 fetch({ chats: fetchedChats.data, self_username: user?.email! })
             );
+            let custom_json = {};
+            if (fetchedChats.data.at(0)?.custom_json) {
+                custom_json = JSON.parse(
+                    fetchedChats.data.at(0)?.custom_json || ""
+                );
+            }
+            console.log({ custom_json });
+            if (custom_json && "theme" in custom_json) {
+                dispatch(
+                    updateTheme({
+                        newTheme:
+                            ThemeSets[
+                                custom_json.theme as keyof typeof ThemeSets
+                            ],
+                    })
+                );
+            }
+            if (custom_json && "emoji" in custom_json) {
+                dispatch(
+                    updateEmoji({ newEmojiCode: custom_json.emoji as any })
+                );
+            }
         };
 
         getChats().catch(console.error);

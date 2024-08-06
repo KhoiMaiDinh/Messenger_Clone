@@ -4,10 +4,10 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 export interface EmojiState {
-    emojiCode: string;
+    emojiCode: string | null;
 }
 
-const initialState: EmojiState = { emojiCode: "" };
+const initialState: EmojiState = { emojiCode: null };
 export const emojiSlice = createSlice({
     name: "emoji",
     initialState,

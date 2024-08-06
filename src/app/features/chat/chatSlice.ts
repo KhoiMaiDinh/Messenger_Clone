@@ -38,8 +38,23 @@ export const chatsSlice = createSlice({
         add: (state, action: PayloadAction<IChat>) => {
             state.chats.push(action.payload);
         },
-        addToBeginning: (state, action: PayloadAction<IChat>) => {
-            state.chats.unshift(action.payload);
+        addToBeginning: (
+            state,
+            action: PayloadAction<{ chat: IChat; self_username: string }>
+        ) => {
+            const { chat, self_username } = action.payload;
+            state.chats.unshift(chat);
+            const opponent = chat.people.find(
+                (p) => p.person.username != action.payload.self_username
+            );
+            state.avatars = [
+                ...state.avatars,
+                {
+                    username: opponent?.person.username!,
+                    avatar_url: opponent?.person.avatar!,
+                },
+            ];
+
             console.log("addToBeginning");
         },
         editChat: (state, action: PayloadAction<IChat>) => {
